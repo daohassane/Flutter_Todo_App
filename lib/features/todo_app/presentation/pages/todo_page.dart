@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_app/features/todo_app/presentation/widgets/todo_list_widget.dart';
+import 'package:todo_app/features/todo_app/presentation/widgets/detail_widget.dart';
+import 'package:todo_app/features/todo_app/presentation/widgets/empty_widget.dart';
 
 import '../../../../injection_container.dart';
 import '../bloc/todo_bloc.dart';
@@ -51,16 +52,16 @@ class TodoPageView extends StatelessWidget {
       child: Container(
         child: BlocBuilder<TodoBloc, TodoState>(
           builder: (context, state) {
+            print(state);
             if (state is Empty) {
-              return Center(
-                child: Container(
-                  child: Text('Empty state'),
-                ),
-              );
+              return EmptyState();
             } else if (state is Loading) {
               return LoadingWidget();
-            } else if (state is TodosLoaded) {
-              return TodoListWidget(todos: state.todos);
+            } else if (state is Loaded) {
+              print(state.todo);
+              return DetailView(
+                todo: state.todo,
+              );
             } else if (state is Error) {
               return Center(
                 child: Container(

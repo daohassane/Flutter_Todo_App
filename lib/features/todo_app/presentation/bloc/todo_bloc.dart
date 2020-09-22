@@ -85,10 +85,10 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   }
 
   Stream<TodoState> _eitherNoParamsLoadedOrErrorState(
-      Either<Faillure, List<Todo>> failureOrTodo) async* {
-    yield failureOrTodo.fold(
+      Either<Faillure, List<Todo>> failureOrTodos) async* {
+    yield failureOrTodos.fold(
       (failure) => Error(message: _mapFailureToMessage(failure)),
-      (todos) => TodosLoaded(todos),
+      (todos) => TodosLoaded(todos: todos),
     );
   }
 

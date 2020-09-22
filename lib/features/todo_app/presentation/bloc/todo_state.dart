@@ -18,7 +18,7 @@ class Loaded extends TodoState {
 class TodosLoaded extends TodoState {
   final List<Todo> todos;
 
-  TodosLoaded([this.todos = const []]) : super([todos]);
+  TodosLoaded({@required this.todos}) : super([todos]);
 }
 
 class Error extends TodoState {

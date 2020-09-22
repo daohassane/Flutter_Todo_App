@@ -10,12 +10,12 @@ abstract class TodoRemoteDataSource {
   /// Calls the https://jsonplaceholder.typicode.com/todos endpoint.
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<List<TodoModel>> getTodoList();
+  Future<Map> getTodoList();
 
   /// Calls the https://jsonplaceholder.typicode.com/todos endpoint.
   ///
   /// Throws a [ServerException] for all error codes.
-  Future<TodoModel> createTodo();
+  Future<TodoModel> createTodo(TodoModel todo);
 
   /// Calls the https://jsonplaceholder.typicode.com/todos/{id} endpoint.
   ///
@@ -41,7 +41,7 @@ class TodoRemoteDataSourceImpl implements TodoRemoteDataSource {
   TodoRemoteDataSourceImpl({@required this.client});
 
   @override
-  Future<List<TodoModel>> getTodoList() async {
+  Future<Map<String, dynamic>> getTodoList() async {
     final response = await client.get(
       'https://jsonplaceholder.typicode.com/todos',
       headers: {
@@ -54,11 +54,7 @@ class TodoRemoteDataSourceImpl implements TodoRemoteDataSource {
       throw ServerException();
     }
 
-    return json
-        .decode(response.body)
-        .map((e) => TodoModel.fromJson(e))
-        .cast<TodoModel>()
-        .toList();
+    return json.decode(response.body);
   }
 
   @override
@@ -79,8 +75,23 @@ class TodoRemoteDataSourceImpl implements TodoRemoteDataSource {
   }
 
   @override
-  Future<TodoModel> createTodo() {
-    return null;
+  Future<TodoModel> createTodo(TodoModel todo) async {
+    final response = await client.post(
+      'https://jsonplaceholder.typicode.com/todos',
+      body: todo.toJson(),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    print(todo);
+
+    if (response.statusCode != 201) {
+      throw ServerException();
+    }
+
+    return TodoModel.fromJson(json.decode(response.body));
   }
 
   @override

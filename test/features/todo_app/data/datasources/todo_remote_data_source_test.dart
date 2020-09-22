@@ -73,4 +73,36 @@ void main() {
       expect(() => call(tId), throwsA(TypeMatcher<ServerException>()));
     });
   });
+
+  group('getAllTodo', () {
+    //final tId = 1;
+    //final tTodoModel = TodoModel.fromJson(json.decode(fixture('todo.json')));
+    test('should perfom a GET request on a URL being the endpoint', () async {
+      // arrange
+      setUpMockHttpClientSucess200();
+      // act
+      remoteDataSource.getTodoList();
+      // assert
+      verify(
+        mockHttpClient.get(
+          'https://jsonplaceholder.typicode.com/todos',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+    });
+
+    test(
+        'should throw a ServerException when the response code is 404 or other',
+        () async {
+      // arrange
+      setUpMockHttpClientFaillure404();
+      // act
+      final call = remoteDataSource.getTodoList;
+      // assert
+      expect(() => call(), throwsA(TypeMatcher<ServerException>()));
+    });
+  });
 }
