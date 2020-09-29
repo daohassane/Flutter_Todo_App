@@ -21,9 +21,23 @@ class TodoRepositoryImpl implements TodoAppRepository {
   });
 
   @override
-  Future<Either<Faillure, List<Todo>>> getTodoList() {
-    networkInfo.isConnected;
-    return null;
+  Future<Either<Faillure, List<Todo>>> getTodoList() async {
+    if(!await networkInfo.isConnected) {
+      try {
+        final localTodoList = await localDataSource.getLastTodoList();
+        return Right(localTodoList);
+      } on CacheException {
+        return Left(CacheFaillure());
+      }
+    }
+
+    try {
+      final remoteTodoList = await remoteDataSource.getTodoList();
+      localDataSource.cacheTodoList(remoteTodoList);
+      return Right(remoteTodoList);
+    } on ServerException {
+      return Left(ServerFaillure());
+    }
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/features/todo_app/domain/usecases/get_todo_list.dart';
 import 'package:todo_app/features/todo_app/presentation/bloc/todo_bloc.dart';
 
 class EmptyState extends StatefulWidget {
@@ -27,6 +28,6 @@ class _EmptyStateState extends State<EmptyState> {
   }
 
   void dispatchTasks() {
-    BlocProvider.of<TodoBloc>(context).dispatch(ShowForTodo('2'));
+    BlocProvider.of<TodoBloc>(context).dispatch(AllForTodo());
   }
 }

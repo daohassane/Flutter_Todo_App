@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 class TodoModel extends Todo {
   TodoModel({
-    int id,
+    @required int id,
     @required int userId,
     @required String title,
     @required bool completed,

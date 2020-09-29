@@ -11,11 +11,15 @@ abstract class TodoLocalDataSource {
   ///
   /// Throws [CacheException] if no cached data is present.
   Future<TodoModel> getLastTodo();
+  Future<List<TodoModel>> getLastTodoList();
 
   Future<void> cacheTodo(TodoModel todoCache);
+
+  Future<void> cacheTodoList(List<TodoModel> remoteTodoList);
 }
 
 const CACHED_TODO = 'CACHED_TODO';
+const CACHED_TODO_LIST = 'CACHED_TODO_LIST';
 
 class TodoLocalDataSourceImpl implements TodoLocalDataSource {
   final SharedPreferences sharedPreferences;
@@ -37,6 +41,24 @@ class TodoLocalDataSourceImpl implements TodoLocalDataSource {
     return sharedPreferences.setString(
       CACHED_TODO,
       json.encode(todoCache.toJson()),
+    );
+  }
+
+  @override
+  Future<List<TodoModel>> getLastTodoList() {
+    final jsonString = sharedPreferences.getString(CACHED_TODO_LIST);
+    if (jsonString == null) {
+      throw CacheException();
+    }
+
+    return Future.value(json.decode(jsonString));
+  }
+
+  @override
+  Future<void> cacheTodoList(List<TodoModel> todoCacheList) {
+    return sharedPreferences.setString(
+      CACHED_TODO_LIST,
+      json.encode(todoCacheList.toString()),
     );
   }
 }

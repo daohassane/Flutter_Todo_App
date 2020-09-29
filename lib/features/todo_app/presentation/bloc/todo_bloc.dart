@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/core/usecases/usecase.dart';
+import 'package:todo_app/features/todo_app/data/models/todo_model.dart';
 
 import '../../../../core/error/faillures.dart';
 import '../../../../util/id_converter.dart';
@@ -16,6 +17,7 @@ import '../../domain/usecases/get_todo_list.dart';
 import '../../domain/usecases/update_todo.dart';
 
 part 'todo_event.dart';
+
 part 'todo_state.dart';
 
 const String SERVER_FAILLURE_MESSAGE = 'Server Faillure';
@@ -37,9 +39,10 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     @required CreateTodo create,
     @required UpdateTodo update,
     @required DeleteTodo delete,
-    this.idConverter,
+    @required this.idConverter,
   })  : assert(show != null),
         assert(create != null),
+        assert(all != null),
         assert(update != null),
         assert(delete != null),
         assert(idConverter != null),
@@ -71,8 +74,8 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       );
     } else if (event is AllForTodo) {
       yield Loading();
-      final failureOrTodo = await getTodoList(NoParams());
-      yield* _eitherNoParamsLoadedOrErrorState(failureOrTodo);
+      final failureOrTodoList = await getTodoList(NoParams());
+      yield* _eitherNoParamsLoadedOrErrorState(failureOrTodoList);
     }
   }
 
@@ -85,10 +88,10 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   }
 
   Stream<TodoState> _eitherNoParamsLoadedOrErrorState(
-      Either<Faillure, List<Todo>> failureOrTodos) async* {
-    yield failureOrTodos.fold(
+      Either<Faillure, List<Todo>> failureOrTodoList) async* {
+    yield failureOrTodoList.fold(
       (failure) => Error(message: _mapFailureToMessage(failure)),
-      (todos) => TodosLoaded(todos: todos),
+      (todos) => TodosLoaded(todos),
     );
   }
 
